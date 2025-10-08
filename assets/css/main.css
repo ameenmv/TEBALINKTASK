@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+:root {
+  --bg: #a6a6a670;
+}
