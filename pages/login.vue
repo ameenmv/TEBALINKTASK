@@ -34,7 +34,7 @@
 <script setup>
 import { useLoginForm } from "@/composables/useLoginForm";
 import { useToast } from "vue-toastification";
-import FormField from "@/components/FormField.vue"; // هنعمل Component صغير للحقل
+import FormField from "@/components/FormField.vue";
 
 const toast = useToast();
 const { form, v$, setTouched, resetForm } = useLoginForm();
