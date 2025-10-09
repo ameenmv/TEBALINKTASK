@@ -2,5 +2,45 @@
 @plugin "daisyui";
 
 :root {
-  --bg: #a6a6a670;
+  --bg: #a6a6a638;
+  --active: #01c688;
+}
+
+.btn-active {
+  padding: 5px 10px;
+  background: var(--active);
+  color: white;
+  border-radius: 5px;
+}
+
+.iconbg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px;
+  background-color: #a3a3a36c;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+}
+.iconbg svg {
+  width: 15px;
+  height: 15px;
+  fill: rgb(113, 113, 113);
+  padding: 0;
+}
+
+.mainLabel {
+  font-size: 18px;
+  font-weight: 500;
+}
+.mainLabel span {
+  color: red;
+}
+.mainInput {
+  outline: none;
+  padding: 10px;
+  background: var(--bg);
+  border-radius: 5px;
 }

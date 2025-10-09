@@ -27,7 +27,6 @@
           <input
             v-model="form.email"
             @input="setTouched('email')"
-            type="email"
             placeholder="Your Email"
             :class="v$.form.email.$error ? 'is-invalid' : ''"
             required

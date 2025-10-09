@@ -10,9 +10,11 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@hennge/vue3-pagination": "^1.0.17",
     "@tailwindcss/vite": "^4.1.14",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
+    "@vueup/vue-quill": "^1.2.0",
     "axios": "^1.12.2",
     "daisyui": "^5.1.28",
     "nuxt": "^3.19.2",
@@ -22,6 +24,7 @@
     "vue": "^3.5.22",
     "vue-router": "^4.5.1",
     "vue-toastification": "^2.0.0-rc.5",
+    "vue3-quill": "^0.3.1",
     "yup": "^1.7.1"
   },
   "devDependencies": {

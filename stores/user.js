@@ -19,11 +19,9 @@ export const useUserStore = defineStore("user", {
     loadAuthData() {
       const savedToken = localStorage.getItem("token");
       const savedRefresh = localStorage.getItem("refresh_token");
-      const savedProfile = localStorage.getItem("profile");
 
       if (savedToken) this.token = savedToken;
       if (savedRefresh) this.refreshToken = savedRefresh;
-      if (savedProfile) this.profile = JSON.parse(savedProfile);
     },
 
     logout() {

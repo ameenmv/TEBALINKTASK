@@ -4,9 +4,12 @@ import { required, email, minLength } from "@vuelidate/validators";
 import { useToast } from "vue-toastification";
 import axios from "axios";
 import { useUserStore } from "~/stores/user";
+import { useRouter } from "vue-router";
 
 export function useLoginForm() {
+  // تعريف التوست والراوتر
   const toast = useToast();
+  const router = useRouter();
 
   const form = reactive({
     email: "",
@@ -15,8 +18,8 @@ export function useLoginForm() {
 
   const rules = {
     form: {
-      email: { required, email },
-      password: { required, minLength: minLength(6) },
+      email: { required },
+      password: { required, minLength: minLength(4) },
     },
   };
 
@@ -43,7 +46,7 @@ export function useLoginForm() {
       const formData = {
         username: form.email,
         password: form.password,
-        provider: "customer",
+        provider: "mgr",
       };
 
       // send to api
@@ -56,12 +59,16 @@ export function useLoginForm() {
       if (response.data.status === 200) {
         const userStore = useUserStore();
         userStore.setAuthData(response.data.data);
-        toast.success("✅ تسجيل الدخول ناجح!");
+        toast.success("✅ تسجيل الدخول ناجح");
+        setTimeout(() => {
+          router.push("/products");
+        }, 1000);
       } else {
         toast.error(response.data.message || "بيانات غير صحيحة");
       }
     } catch (error) {
       console.error("❌ Error:", error.response?.data || error.message);
+      // delete this before deadline
       toast.error(
         error.response?.data?.message || "حدث خطأ أثناء تسجيل الدخول"
       );
