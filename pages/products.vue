@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-x-auto">
+  <div class="overflow-x-auto pb-4">
     <table class="table">
       <!-- head -->
       <thead>
@@ -16,7 +16,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(product, index) in products" :key="index">
+        <tr v-for="(product, index) in paginatedProducts" :key="index">
           <!-- # -->
           <th>{{ index + 1 }}</th>
           <!-- product -->
@@ -55,15 +55,13 @@
           <th>
             <div class="flex items-center gap-4">
               <!-- edit -->
-              <nuxt-link to="/edit">
-                <div class="iconbg">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                    <path
-                      d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L368 46.1 465.9 144 490.3 119.6c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L432 177.9 334.1 80 172.4 241.7zM96 64C43 64 0 107 0 160L0 416c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-96c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 64z"
-                    />
-                  </svg>
-                </div>
-              </nuxt-link>
+              <div @click="this.$router.push(`edit/${index}`)" class="iconbg">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                  <path
+                    d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L368 46.1 465.9 144 490.3 119.6c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L432 177.9 334.1 80 172.4 241.7zM96 64C43 64 0 107 0 160L0 416c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-96c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 64z"
+                  />
+                </svg>
+              </div>
               <!-- delete -->
               <div onclick="delete_modal.showModal()" class="iconbg">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
@@ -81,7 +79,7 @@
     <dialog id="delete_modal" class="modal" ref="deleteModal">
       <div class="modal-box text-center">
         <h3 class="font-bold text-lg mb-2">هل أنت متأكد؟</h3>
-        <p>سيتم حذف المنتج نهائيًا!</p>
+        <p>سيتم حذف المنتج نهائيًا</p>
         <div class="modal-action flex justify-center gap-4 mt-4">
           <button class="btn btn-error" @click="confirmDelete">
             نعم، احذف
@@ -92,248 +90,60 @@
         </div>
       </div>
     </dialog>
+
+    <!-- Pagination -->
+    <div class="flex justify-between items-center mt-6 flex-wrap gap-3 px-10">
+      <!-- Showing selector -->
+      <div class="flex items-center gap-2">
+        <span>Showing</span>
+        <select v-model="perPage" class="select select-bordered select-sm">
+          <option v-for="n in [5, 10, 20, 50]" :key="n" :value="n">
+            {{ n }}
+          </option>
+        </select>
+        <span>Results</span>
+      </div>
+
+      <!-- Page numbers -->
+      <div class="flex items-center gap-1">
+        <button
+          class="btn btn-sm"
+          :disabled="currentPage === 1"
+          @click="currentPage--"
+        >
+          «
+        </button>
+
+        <button
+          v-for="page in visiblePages"
+          :key="page"
+          class="btn btn-sm"
+          :class="{ 'btn-active': currentPage === page }"
+          @click="goToPage(page)"
+        >
+          {{ page }}
+        </button>
+
+        <button
+          class="btn btn-sm"
+          :disabled="currentPage === totalPages"
+          @click="currentPage++"
+        >
+          »
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      products: [
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-        {
-          img: "/images/horse.jpg",
-          name: "iphone",
-          description: "iphone 11 pro max",
-          barcode: "42342342",
-          category: "tv",
-          brand: "samsung",
-          views: "56477",
-          status: "active",
-          onlineStatus: "active",
-        },
-      ],
-    };
-  },
-  methods: {},
-};
+<script setup>
+import { pagination } from "~/composables/pagination";
+const {
+  currentPage,
+  perPage,
+  totalPages,
+  paginatedProducts,
+  visiblePages,
+  goToPage,
+} = pagination();
 </script>
